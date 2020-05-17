@@ -1,0 +1,76 @@
+Attribute VB_Name = "Module1"
+Sub stockTesting()
+        
+For Each ws In Worksheets
+        
+        'Declare Variables
+        Dim ticker As String
+        
+        Dim yearlyChange As Double
+        yearlyChange = 0
+        
+        Dim percentChange As Double
+        percentChange = 0
+        
+        Dim totalVolume As Double
+        totalVolume = 0
+        rowStart = 2
+        
+        Summary_Table_Row = 2
+        
+        'Insert column headers
+        ws.Cells(1, 9).Value = "Ticker"
+        ws.Cells(1, 10).Value = "Yearly Change"
+        ws.Cells(1, 11).Value = "Percent Change"
+        ws.Cells(1, 12).Value = "Total Volume"
+        
+        'Format percentChange as percent
+        ws.Range("K:K").NumberFormat = "0.00%"
+        
+        'Format yearlyChange as currency
+        ws.Range("J:J").NumberFormat = "$#,##0.00"
+        
+        'Format columns C:F as currency
+        ws.Range("C:F").NumberFormat = "$#,##0.00"
+        
+        'Determine last row
+        lastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        
+       ' Loop through ticker
+        For i = 2 To lastRow
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+               ticker = ws.Cells(i, 1).Value
+               yearlyChange = ws.Cells(i, 6).Value - ws.Cells(rowStart, 3).Value
+               percentChange = (ws.Cells(i, 6).Value - ws.Cells(rowStart, 3).Value) / ws.Cells(rowStart, 3).Value
+               totalVolume = totalVolume + ws.Cells(i, 7).Value
+                
+               ws.Range("I" & Summary_Table_Row).Value = ticker
+               ws.Range("J" & Summary_Table_Row).Value = yearlyChange
+               ws.Range("K" & Summary_Table_Row).Value = percentChange
+               ws.Range("L" & Summary_Table_Row).Value = totalVolume
+               
+                Summary_Table_Row = Summary_Table_Row + 1
+                
+                yearlyChange = 0
+                percentChange = 0
+                totalVolume = 0
+                rowStart = i + 1
+           Else
+               
+               totalVolume = totalVolume + ws.Cells(i, 7).Value
+              
+           End If
+          
+           If ws.Cells(i, 10).Value > 0 Then
+                ws.Cells(i, 10).Interior.ColorIndex = 4
+           ElseIf ws.Cells(i, 10).Value <= 0 Then
+                ws.Cells(i, 10).Interior.ColorIndex = 3
+           End If
+            
+      Next i
+            
+   Next ws
+        
+End Sub
+
+
